@@ -1,0 +1,40 @@
+{% extends 'adminTemplate/base.html.twig' %}
+{% import 'adminTemplate/macros.html.twig' as macros %}
+{% set page_title %}Edit {{ seoPage.title }}{% endset %}
+
+{% block breadcrumb %}
+    <div class="breadcrumb-line">
+        <ul class="breadcrumb">
+            <li><a href="{{ path('dashboard') }}"><i class="icon-home2 position-left"></i>Dashboard</a></li>
+            <li><a href="{{ path('seopage_index') }}">Seo pages</a></li>
+            <li class="active">{{ page_title }}</li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block body %}
+    {{ form_start(edit_form, {'attr':{"data-toggle":"validator",'novalidate':'novalidate'} }) }}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-flat">
+                <div class="panel-body">
+                    <div class="row">
+                        {{ macros.input(edit_form.title) }}
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    {% include 'adminTemplate/saveAndResetFormFooter.html.twig' %}
+                </div>
+            </div>
+            {% include '@PNSeo/Administration/Seo/seo.html.twig' with { 'seoForm':edit_form.seo, 'entity':seoPage } %}
+        </div>
+    </div>
+    {{ form_end(edit_form) }}
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('admin/js/ckeditor/ckeditor.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('admin/js/plugins/forms/validation/validate.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('admin/js/pages/form_validation.js') }}"></script>
+    {% include 'PNSeoBundle:Administration/Seo:seo.js.html.twig' with { 'entity':seoPage} %}
+{% endblock javascripts %}
