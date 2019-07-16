@@ -1,6 +1,6 @@
 {
     "name": "perfectneeds/seo-single-lang-bundle",
-    "description": "Seo Bundle for Multi languages websites",
+    "description": "Seo Bundle for Single language websites",
     "keywords": ["PerfectNeeds", "Seo Bundle"],
     "homepage": "http://perfectneeds.github.com",
     "type": "symfony-library",
