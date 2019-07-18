@@ -31,6 +31,7 @@
         var descriptionInput = $element.prev(".panel").find("textarea[name$='[description]']").first();
         var seoTitleInput = $element.find("input[name$='[title]']").first();
         var seoFocusKeywordInput = $element.find("input[name$='[focusKeyword]']").first();
+        var socialMediaTitlesInput = $element.find(".socialMediaData").find("input[name$='[title]']");
         var seoMetaDescriptionInput = $element.find("textarea[name$='[metaDescription]']").first();
         var seoSlugInput = $element.find("input[name$='[slug]']");
         var seoStateHiddenInput = $element.find("input[name$='[state]']");
@@ -378,6 +379,13 @@
                 seoTitleInput.val($(this).val());
                 seoTitleInput.trigger('keyup');
             }
+            if (socialMediaTitlesInput.length > 0) {
+                socialMediaTitlesInput.each(function () {
+                    if ($(this).prop('value') === '') {
+                        $(this).val(titleInput.val());
+                    }
+                });
+            }
         });
         // convert slug text to slugify format
         seoSlugInput.blur(function () {
@@ -399,7 +407,7 @@
                     data: {
                         slug: slugify, seoId: seoId,
                         seoBaseRouteId: seoBaseRouteId,
-                        locale:locale
+                        locale: locale
                     },
                     beforeSend: function () {
                         seoSlugInput.parent().find(".form-control-feedback").removeClass("hidden");
