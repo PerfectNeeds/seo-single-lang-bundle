@@ -306,9 +306,6 @@ The slug value that passed from route parameter
 **type**: `Object` 
 An istance of any Entity 
 
-##### slueRouteParamName _(optional, default 'slug')_:
-**type**: `string` 
-Name of slug in route annotation
 
 ### 4. Use Seo in details page like _show.html.twig_
 this snippet of code used to add the meta tags and html title in `base.html.twig`

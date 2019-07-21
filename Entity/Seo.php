@@ -80,6 +80,11 @@ abstract class Seo {
      */
     protected $seoPage;
 
+    /**
+     * @ORM\OneToMany(targetEntity="PN\SeoBundle\Entity\SeoSocial", mappedBy="seo", orphanRemoval=true, cascade={"persist", "remove"})
+     */
+    protected $seoSocials;
+
     public function __clone() {
         $this->id = NULL;
     }
@@ -92,7 +97,7 @@ abstract class Seo {
     }
 
     public function getRelationalEntity() {
-        $excludeMethods = ['id', 'seoBaseRoute', 'title', "slug", "metaDescription", "focusKeyword", "metaKeyword", "state", "lastModified", "deleted", "seoSocials", "__initializer__", "__isInitialized__", "__cloner__"];
+        $excludeMethods = ['id', 'seoBaseRoute', 'title', "slug", "metaDescription", "focusKeyword", "metaKeyword", "state", "lastModified", "deleted", "seoSocials", "addSeoSocial", "removeSeoSocial", "getSeoSocials", "getSeoSocialByType", "__initializer__", "__isInitialized__", "__cloner__"];
 
         $allObjects = get_object_vars($this);
         foreach ($allObjects as $objectName => $objectValue) {
@@ -358,6 +363,59 @@ abstract class Seo {
      */
     public function getMetaTags() {
         return $this->metaTags;
+    }
+
+    /**
+     * Add seoSocial
+     *
+     * @param \PN\SeoBundle\Entity\SeoSocial $seoSocial
+     *
+     * @return Seo
+     */
+    public function addSeoSocial(\PN\SeoBundle\Entity\SeoSocial $seoSocial) {
+        if (!$this->seoSocials instanceof \Doctrine\ORM\PersistentCollection AND ! $this->seoSocials instanceof \Doctrine\Common\Collections\ArrayCollection) {
+            throw new \Exception('Error: Add $this->seoSocials = new \Doctrine\Common\Collections\ArrayCollection() to ' . __CLASS__ . '::__construct() method');
+        }
+        if (!$this->seoSocials->contains($seoSocial)) {
+            $this->seoSocials->add($seoSocial);
+            $seoSocial->setSeo($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove seoSocial
+     *
+     * @param \PN\SeoBundle\Entity\SeoSocial $seoSocial
+     */
+    public function removeSeoSocial(\PN\SeoBundle\Entity\SeoSocial $seoSocial) {
+        $this->seoSocials->removeElement($seoSocial);
+        $seoSocial->setSeo(null);
+    }
+
+    /**
+     * Get seoSocials
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSeoSocials($types = null) {
+        if ($types) {
+            return $this->seoSocials->filter(function ( $seoSocial) use ($types) {
+                        return in_array($seoSocial->getSocialNetwork(), $types);
+                    });
+        } else {
+            return $this->seoSocials;
+        }
+    }
+
+    /**
+     * Get seoSocial By Type
+     *
+     * @return \PN\SeoBundle\Entity\SeoSocial
+     */
+    public function getSeoSocialByType($type) {
+        return $this->getSeoSocials(array($type))->first();
     }
 
 }
