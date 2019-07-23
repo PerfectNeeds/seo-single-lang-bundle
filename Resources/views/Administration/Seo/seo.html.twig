@@ -47,7 +47,7 @@
                                     [PAGE TITLE]
                                 </div>
                                 <div class="snippetPreviewLink">
-                                    {{ app.request.getSchemeAndHttpHost() ~ app.request.getBaseURL() }}/{{ seoBaseRoute.baseRoute }}/<span class="snippetPreviewLinkSlug"></span>
+                                    {{ app.request.getSchemeAndHttpHost() ~ app.request.getBaseURL() }}/{{ seoBaseRoute.baseRoute }}{% if seoBaseRoute.baseRoute|length > 0 %}/{% endif %}<span class="snippetPreviewLinkSlug"></span>
                                 </div>
                                 <div class="snippetPreviewMetaDescription">
                                     Please provide a meta description by editing the snippet below.
