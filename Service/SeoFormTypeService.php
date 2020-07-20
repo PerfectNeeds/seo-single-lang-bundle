@@ -22,7 +22,7 @@ class SeoFormTypeService {
     public function checkAndGenerateSlug($entity, $seoEntity) {
 
         if (!$seoEntity instanceof Seo) {
-            throw new Exception('$seoEntity Must be instance of Seo ');
+            throw new \Exception('$seoEntity Must be instance of Seo ');
         }
 
         $em = $this->em;
