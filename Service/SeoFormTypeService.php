@@ -2,24 +2,27 @@
 
 namespace PN\SeoBundle\Service;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use PN\SeoBundle\Entity\Seo;
 use PN\SeoBundle\Entity\SeoBaseRoute;
 use PN\ServiceBundle\Utils\General;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class SeoFormTypeService {
+class SeoFormTypeService
+{
 
     public $container;
     public $em;
     public $seoClass;
 
-    public function __construct(ContainerInterface $container) {
+    public function __construct(ContainerInterface $container)
+    {
         $this->container = $container;
         $this->em = $container->get('doctrine.orm.entity_manager');
         $this->seoClass = $this->container->getParameter('pn_seo_class');
     }
 
-    public function checkAndGenerateSlug($entity, $seoEntity) {
+    public function checkAndGenerateSlug($entity, $seoEntity)
+    {
 
         if (!$seoEntity instanceof Seo) {
             throw new \Exception('$seoEntity Must be instance of Seo ');
@@ -37,54 +40,69 @@ class SeoFormTypeService {
         if ($slugIfExist) {
             return $this->generateSlug($seoBaseRoute, $entity, $seoEntity);
         }
+
         return $seoEntity->getSlug();
     }
 
-    public function checkSlugIfExist(SeoBaseRoute $seoBaseRoute, $entity, $seoEntity) {
+    public function checkSlugIfExist(SeoBaseRoute $seoBaseRoute, $entity, $seoEntity)
+    {
         $em = $this->em;
         $slug = $this->getSlug($entity, $seoEntity);
-        if (!method_exists($entity, "getSeo") OR $entity->getSeo() == null OR $entity->getSeo()->getId() == null) { // new
-            $checkSeo = $em->getRepository($this->seoClass)->findOneBy(array('seoBaseRoute' => $seoBaseRoute->getId(), 'slug' => $slug, 'deleted' => FALSE));
+        if (!method_exists($entity,
+                "getSeo") OR $entity->getSeo() == null OR $entity->getSeo()->getId() == null) { // new
+            $checkSeo = $em->getRepository($this->seoClass)->findOneBy(array(
+                'seoBaseRoute' => $seoBaseRoute->getId(),
+                'slug' => $slug,
+                'deleted' => false,
+            ));
         } else { // edit
-            $checkSeo = $em->getRepository($this->seoClass)->findBySlugAndBaseRouteAndNotId($seoBaseRoute->getId(), $slug, $entity->getSeo()->getId());
+            $checkSeo = $em->getRepository($this->seoClass)->findBySlugAndBaseRouteAndNotId($seoBaseRoute->getId(),
+                $slug, $entity->getSeo()->getId());
         }
 
         if ($checkSeo != null) {
             return true;
         }
+
         return false;
     }
 
     //DONE
-    private function generateSlug(SeoBaseRoute $seoBaseRoute, $entity, $seoEntity) {
+    private function generateSlug(SeoBaseRoute $seoBaseRoute, $entity, $seoEntity)
+    {
         $tempSlug = $this->getSlug($entity, $seoEntity);
         $i = 0;
         do {
             if ($i == 0) {
                 $slug = General::seoUrl($tempSlug);
             } else {
-                $slug = General::seoUrl($tempSlug . '-' . $i);
+                $slug = General::seoUrl($tempSlug).'-'.$i;
             }
             $seoEntity->setSlug($slug);
             $slugIfExist = $this->checkSlugIfExist($seoBaseRoute, $entity, $seoEntity);
             $i++;
         } while ($slugIfExist == true);
+
         return $slug;
     }
 
     //DONE
-    private function getSlug($entity, $seoEntity) {
+    private function getSlug($entity, $seoEntity)
+    {
         if ($seoEntity->getSlug()) {
             return $seoEntity->getSlug();
         } else {
             $title = $this->getTitle($entity);
+
             return General::seoUrl($title);
         }
+
         return null;
     }
 
     //DONE
-    private function getTitle($entity) {
+    private function getTitle($entity)
+    {
         $title = $this->getEntityTitle($entity);
 
         if ($title == null) {
@@ -95,7 +113,8 @@ class SeoFormTypeService {
     }
 
     //DONE
-    private function getEntityTitle($entity) {
+    private function getEntityTitle($entity)
+    {
         if (method_exists($entity, "getTitle")) {
             return $entity->getTitle();
         } elseif (method_exists($entity, "getName")) {
@@ -103,6 +122,7 @@ class SeoFormTypeService {
         } elseif (method_exists($entity, "__toString")) {
             return $entity->__toString();
         }
+
         return null;
     }
 
